@@ -1,0 +1,14 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/Crystal_Clear_action_exit.png</file>
+    <file>icons/Crystal_Clear_action_db_status.png</file>
+    <file>icons/Crystal_Clear_action_edit_add.png</file>
+    <file>icons/Crystal_Clear_action_edit_remove.png</file>
+    <file>icons/Crystal_Clear_action_run.png</file>
+    <file>icons/Crystal_Clear_app_cache.png</file>
+    <file>icons/Crystal_Clear_app_database.png</file>
+    <file>icons/Crystal_Clear_app_kservices.png</file>
+    <file>icons/Crystal_Clear_app_quick_restart.png</file>
+    <file>icons/Crystal_Clear_action_db_add.png</file>
+  </qresource>
+</RCC>
