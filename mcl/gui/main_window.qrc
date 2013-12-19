@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/delete.png</file>
+    <file>icons/wrench.png</file>
     <file>icons/Crystal_Clear_action_exit.png</file>
     <file>icons/Crystal_Clear_action_db_status.png</file>
     <file>icons/Crystal_Clear_action_edit_add.png</file>

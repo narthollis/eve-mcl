@@ -20,6 +20,9 @@ class MCLConfig(object):
     def addAccount(self, *, label, username, password=None):
         self.accounts[label] = AccountConfig(label=label, username=username, password=password)
 
+    def removeAccount(self, label):
+        del self.accounts[label]
+
     def addClient(self, *, label, path, server, wine_cmd, wine_flags):
         self.clients[label] = ClientConfig(
             label=label,
@@ -28,6 +31,9 @@ class MCLConfig(object):
             wine_cmd=wine_cmd,
             wine_flags=wine_flags
         )
+
+    def removeClient(self, label):
+        del self.clients[label]
 
     @classmethod
     def load(cls, path):
