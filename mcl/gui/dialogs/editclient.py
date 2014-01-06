@@ -1,6 +1,6 @@
 import os
 
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtWidgets, QtCore, uic
 from PyQt5.QtCore import pyqtSlot
 
 class UI_EditClient(QtWidgets.QDialog):
@@ -8,7 +8,9 @@ class UI_EditClient(QtWidgets.QDialog):
     def __init__(self, *args, label=None, path=None, server=None, wine_cmd=None, wine_flags=None, **kwargs):
         super(UI_EditClient, self).__init__(*args, **kwargs)
 
-        uic.loadUi(os.path.join(os.path.dirname(os.path.abspath(__file__)), "edit_configuration.ui"), self)
+        ui = QtCore.QFile(":/uis/dialogs/edit_configuration.ui")
+        ui.open(QtCore.QIODevice.ReadOnly)
+        uic.loadUi(ui, self)
 
         self.oldLabel = label
         if label: self.configName.setText(label)
@@ -30,6 +32,13 @@ class UI_EditClient(QtWidgets.QDialog):
 
     def accept(self):
         parent = self.parent()
+
+        realParent = parent
+
+        try:
+            parent.config
+        except AttributeError:
+            parent = parent.parent()
 
         label = self.configName.text()
 
@@ -54,6 +63,9 @@ class UI_EditClient(QtWidgets.QDialog):
 
         parent.config.save()
         parent.addRemoveAccountRows()
+
+        if realParent != parent:
+            realParent.addRemoveClientRows()
 
         self.close()
 

@@ -17,28 +17,47 @@ class AccountRow(QtCore.QObject):
         self.username = username
         self.password = password
 
-        self.qlabel = QtWidgets.QLabel(self.label)
+        self.labelButton = QtWidgets.QPushButton(self.label)
+
+        labelIcon = QtGui.QIcon()
+        labelIcon.addPixmap(QtGui.QPixmap(":/icons/icons/tick.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        labelIcon.addPixmap(QtGui.QPixmap(":/icons/icons/cross.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.labelButton.setIcon(labelIcon)
+        self.labelButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.labelButton.setCheckable(True)
+        self.labelButton.setStyleSheet("text-align: left")
+
         self.combobox = QtWidgets.QComboBox()
         self.combobox.addItems(clients)
 
-        self.checkbox = QtWidgets.QCheckBox()
         self.launchButton = QtWidgets.QPushButton("Launch")
         self.editButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(':/icons/icons/wrench.png')), '')
         self.removeButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(':/icons/icons/delete.png')), '')
 
-        self.launchButton.clicked.connect(lambda: self.on_button_clicked())
+        self.launchButton.clicked.connect(lambda: self.on_launchButton_clicked())
         self.removeButton.clicked.connect(lambda: self.on_remove_clicked())
         self.editButton.clicked.connect(lambda: self.on_edit_clicked())
 
+        self.labelButton.toggled.connect(lambda: self.on_labelButton_toggle())
+        self.combobox.currentIndexChanged.connect(lambda: self.on_combobox_change())
+
+        if self.label in self.parent.config.states.keys():
+            state = self.parent.config.states[self.label]
+
+            self.labelButton.setChecked(state.selected)
+
+            if state.clientLabel is not None:
+                try:
+                    self.combobox.setCurrentIndex(self.combobox.findText(state.clientLabel))
+                except Exception as e:
+                    print(e)
+
     def remove(self):
-        self.parent.accountGridLayout.removeWidget(self.qlabel)
-        self.qlabel.deleteLater()
+        self.parent.accountGridLayout.removeWidget(self.labelButton)
+        self.labelButton.deleteLater()
 
         self.parent.accountGridLayout.removeWidget(self.combobox)
         self.combobox.deleteLater()
-
-        self.parent.accountGridLayout.removeWidget(self.checkbox)
-        self.checkbox.deleteLater()
 
         self.parent.accountGridLayout.removeWidget(self.launchButton)
         self.launchButton.deleteLater()
@@ -54,8 +73,7 @@ class AccountRow(QtCore.QObject):
         self.username = username
         self.password = password
 
-        self.qlabel.clear()
-        self.qlabel.setText(self.label)
+        self.labelButton.setText(self.label)
 
     def redraw_comboBox(self, clients):
         old_choice = self.combobox.currentText()
@@ -66,7 +84,21 @@ class AccountRow(QtCore.QObject):
         except Exception:
             pass
 
-    def on_button_clicked(self):
+    def storeState(self):
+        self.parent.config.setState(
+            label=self.label,
+            selected=self.labelButton.isChecked(),
+            clientLabel=self.combobox.currentText()
+        )
+        self.parent.config.save()
+
+    def on_labelButton_toggle(self):
+        self.storeState()
+
+    def on_combobox_change(self, *args, **kwargs):
+        self.storeState()
+
+    def on_launchButton_clicked(self):
         print('on_button_clicked', self.label)
 
     def on_edit_clicked(self):
@@ -87,15 +119,16 @@ class UI_Main(QtWidgets.QMainWindow):
 
         super(UI_Main, self).__init__(*args, **kwargs)
 
-        uic.loadUi(os.path.join(os.path.dirname(os.path.abspath(__file__)),"main_window.ui"), self)
+        ui = QtCore.QFile(":/uis/main_window.ui")
+        ui.open(QtCore.QIODevice.ReadOnly)
+        uic.loadUi(ui, self)
 
         self.accountGridLayout.setAlignment(QtCore.Qt.AlignTop)
-        self.accountGridLayout.setColumnStretch(0, 0)
+        self.accountGridLayout.setColumnStretch(0, 3)
         self.accountGridLayout.setColumnStretch(1, 3)
-        self.accountGridLayout.setColumnStretch(2, 3)
+        self.accountGridLayout.setColumnStretch(2, 1)
         self.accountGridLayout.setColumnStretch(3, 1)
         self.accountGridLayout.setColumnStretch(4, 1)
-        self.accountGridLayout.setColumnStretch(5, 1)
 
         self.flatClientList = list(self.config.clients.keys())
         self.accountRows = {}
@@ -109,12 +142,11 @@ class UI_Main(QtWidgets.QMainWindow):
 
         self.accountRows[account.label] = AccountRow(clients=self.flatClientList, parent=self, **account)
 
-        self.accountGridLayout.addWidget(self.accountRows[account.label].checkbox, row_idx, 0)
-        self.accountGridLayout.addWidget(self.accountRows[account.label].qlabel, row_idx, 1)
-        self.accountGridLayout.addWidget(self.accountRows[account.label].combobox, row_idx, 2)
-        self.accountGridLayout.addWidget(self.accountRows[account.label].launchButton, row_idx, 3)
-        self.accountGridLayout.addWidget(self.accountRows[account.label].editButton, row_idx, 4)
-        self.accountGridLayout.addWidget(self.accountRows[account.label].removeButton, row_idx, 5)
+        self.accountGridLayout.addWidget(self.accountRows[account.label].labelButton, row_idx, 0)
+        self.accountGridLayout.addWidget(self.accountRows[account.label].combobox, row_idx, 1)
+        self.accountGridLayout.addWidget(self.accountRows[account.label].launchButton, row_idx, 2)
+        self.accountGridLayout.addWidget(self.accountRows[account.label].editButton, row_idx, 3)
+        self.accountGridLayout.addWidget(self.accountRows[account.label].removeButton, row_idx, 4)
 
     def addRemoveAccountRows(self):
         self.flatClientList = list(self.config.clients.keys())
@@ -158,7 +190,6 @@ class UI_Main(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def on_actionManage_Configs_triggered(self, *args, **kwargs):
-        print('on_actionManages_Config_triggered')
         dialog = UI_ListClients(parent=self, clients=self.config.clients)
         dialog.setModal(True)
         dialog.show()

@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/accept.png</file>
+    <file>icons/cross.png</file>
+    <file>icons/tick.png</file>
     <file>icons/delete.png</file>
     <file>icons/wrench.png</file>
     <file>icons/Crystal_Clear_action_exit.png</file>
@@ -12,5 +15,11 @@
     <file>icons/Crystal_Clear_app_kservices.png</file>
     <file>icons/Crystal_Clear_app_quick_restart.png</file>
     <file>icons/Crystal_Clear_action_db_add.png</file>
+  </qresource>
+  <qresource prefix="uis">
+    <file>main_window.ui</file>
+    <file>dialogs/edit_account.ui</file>
+    <file>dialogs/edit_configuration.ui</file>
+    <file>dialogs/list_configurations.ui</file>
   </qresource>
 </RCC>

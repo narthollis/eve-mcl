@@ -1,7 +1,7 @@
 
 import os
 
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtCore, QtWidgets, uic
 from PyQt5.QtCore import pyqtSlot
 
 
@@ -9,7 +9,9 @@ class UI_EditAccount(QtWidgets.QDialog):
     def __init__(self, *args, label=None, username=None, password=None, **kwargs):
         super(UI_EditAccount, self).__init__(*args, **kwargs)
 
-        uic.loadUi(os.path.join(os.path.dirname(os.path.abspath(__file__)), "edit_account.ui"), self)
+        ui = QtCore.QFile(":/uis/dialogs/edit_account.ui")
+        ui.open(QtCore.QIODevice.ReadOnly)
+        uic.loadUi(ui, self)
 
         self.oldLabel = label
         if label: self.accountLabel.setText(label)
