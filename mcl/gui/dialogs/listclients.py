@@ -88,6 +88,12 @@ class UI_ListClients(QtWidgets.QDialog):
         self.addRemoveClientRows()
 
         self.pushButton_Done.clicked.connect(lambda: self.close())
+        self.pushButton_Add_Client.clicked.connect(lambda: self.on_Add_Client_clicked())
+
+    def on_Add_Client_clicked(self):
+        dialog = UI_EditClient(parent=self)
+        dialog.setModal(True)
+        dialog.show()
 
     def addClientRow(self, client):
         row_idx = len(self.clientRows)

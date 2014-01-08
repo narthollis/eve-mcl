@@ -22,5 +22,6 @@
     <file>dialogs/edit_account.ui</file>
     <file>dialogs/edit_configuration.ui</file>
     <file>dialogs/list_configurations.ui</file>
+    <file>dialogs/about.ui</file>
   </qresource>
 </RCC>

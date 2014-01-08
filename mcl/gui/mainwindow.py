@@ -1,10 +1,8 @@
 
-import os
-
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 
 from . import resources
-from .dialogs import UI_EditAccount, UI_EditClient, UI_ListClients
+from .dialogs import UI_EditAccount, UI_ListClients, UI_About
 
 
 class AccountRow(QtCore.QObject):
@@ -183,12 +181,6 @@ class UI_Main(QtWidgets.QMainWindow):
         dialog.show()
 
     @QtCore.pyqtSlot()
-    def on_actionAdd_Config_triggered(self, *args, **kwargs):
-        dialog = UI_EditClient(parent=self)
-        dialog.setModal(True)
-        dialog.show()
-
-    @QtCore.pyqtSlot()
     def on_actionManage_Configs_triggered(self, *args, **kwargs):
         dialog = UI_ListClients(parent=self, clients=self.config.clients)
         dialog.setModal(True)
@@ -197,3 +189,9 @@ class UI_Main(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def on_actionExit_triggered(self, *args, **kwargs):
         self.close()
+
+    @QtCore.pyqtSlot()
+    def on_actionAbout_triggered(self):
+        dialog = UI_About(parent=self)
+        dialog.setModal(True)
+        dialog.show()

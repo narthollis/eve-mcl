@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>596</width>
-    <height>416</height>
+    <width>398</width>
+    <height>276</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,8 +44,9 @@
    <addaction name="separator"/>
    <addaction name="actionAdd_Account"/>
    <addaction name="separator"/>
-   <addaction name="actionAdd_Config"/>
    <addaction name="actionManage_Configs"/>
+   <addaction name="separator"/>
+   <addaction name="actionAbout"/>
    <addaction name="separator"/>
    <addaction name="actionExit"/>
   </widget>
@@ -73,18 +74,6 @@
     <string>Acc Account</string>
    </property>
   </action>
-  <action name="actionAdd_Config">
-   <property name="icon">
-    <iconset resource="main_window.qrc">
-     <normaloff>:/icons/icons/Crystal_Clear_action_db_add.png</normaloff>:/icons/icons/Crystal_Clear_action_db_add.png</iconset>
-   </property>
-   <property name="text">
-    <string>Add Config</string>
-   </property>
-   <property name="toolTip">
-    <string>Add Config</string>
-   </property>
-  </action>
   <action name="actionManage_Configs">
    <property name="icon">
     <iconset resource="main_window.qrc">
@@ -107,6 +96,18 @@
    </property>
    <property name="toolTip">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="main_window.qrc">
+     <normaloff>:/icons/icons/Crystal_Clear_action_info.png</normaloff>:/icons/icons/Crystal_Clear_action_info.png</iconset>
+   </property>
+   <property name="text">
+    <string>About MCL</string>
+   </property>
+   <property name="toolTip">
+    <string>About MCL</string>
    </property>
   </action>
  </widget>

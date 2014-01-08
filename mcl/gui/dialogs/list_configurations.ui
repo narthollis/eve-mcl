@@ -20,9 +20,9 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="pushButton_Add">
+      <widget class="QPushButton" name="pushButton_Done">
        <property name="text">
-        <string>Add Client</string>
+        <string>Done</string>
        </property>
       </widget>
      </item>
@@ -40,9 +40,9 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_Done">
+      <widget class="QPushButton" name="pushButton_Add_Client">
        <property name="text">
-        <string>Done</string>
+        <string>Add Client</string>
        </property>
       </widget>
      </item>
