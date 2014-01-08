@@ -37,3 +37,6 @@ nosetests.xml
 
 dist/
 *.7z
+
+# Damn windows
+Thumbs.db
