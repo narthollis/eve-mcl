@@ -1,7 +1,7 @@
 
 import os, os.path, subprocess
 
-from PyQt5 import QtWidgets, uic, QtGui, QtCore
+from PyQt5 import QtWidgets, uic, QtGui, QtCore, Qt
 
 from mcl.gui import resources
 from mcl.gui.dialogs import UI_EditAccount, UI_ListClients, UI_About
@@ -75,6 +75,10 @@ class AccountRow(QtCore.QObject):
         self.username = username
         self.password = password
 
+        self.launchButton.setDisabled(False)
+        self.launchButton.setFlat(False)
+        self.launchButton.setText("Launch")
+
         self.labelButton.setText(self.label)
 
     def redraw_comboBox(self, clients):
@@ -113,28 +117,35 @@ class AccountRow(QtCore.QObject):
             dialog.show()
             return
 
-        launch = Launch(self.username, self.password, self.parent.config.clients[client_label], parent=self.parent)
-        launch.start()
+        self.launchButton.setDisabled(True)
+        self.launchButton.setFlat(True)
+        self.launchButton.setText("Launching....")
+
+
+        self._launch = Launch(self.username, self.password, self.parent.config.clients[client_label])
+
+        self._launch.error.connect(lambda e: self.on_login_error(e))
+        self._launch.finished.connect(lambda a=None: self.on_launch_finished(a))
+
+        self._launch.start()
 
         return
 
-        cmd = []
+    def on_launch_finished(self, a=None):
+        if a is False:
+            self.launchButton.setText('Error')
+        else:
+            self.launchButton.setDisabled(False)
+            self.launchButton.setFlat(False)
+            self.launchButton.setText("Launch")
 
-        if self.parent.config.clients[client_label].wine_cmd:
-            cmd.append(self.parent.config.clients[client_label].wine_cmd)
-            if self.parent.config.clients[client_label].wine_flags:
-                cmd.append(self.parent.config.clients[client_label].wine_flags)
-
-        cmd.append('"{}"'.format(exepath))
-
-        if self.parent.config.clients[client_label].server == "singularity":
-            cmd.append("/server:Singularity")
-
-
-
-        cmd.append("/ssoToken=" + launch_token)
-
-        return subprocess.Popen(" ".join(cmd), shell=True)
+    def on_login_error(self, e):
+        dialog = QtWidgets.QMessageBox(parent=self.parent)
+        dialog.setWindowTitle('Login Error')
+        dialog.setText(str(e))
+        dialog.setModal(True)
+        dialog.show()
+        return
 
     def on_labelButton_toggle(self):
         self.storeState()
