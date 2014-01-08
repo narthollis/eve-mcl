@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/Crystal_Clear_action_info.png</file>
     <file>icons/accept.png</file>
     <file>icons/cross.png</file>
     <file>icons/tick.png</file>
