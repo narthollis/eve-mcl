@@ -1,2 +1,5 @@
 PyQt5
 appdirs
+requests
+beautifulsoup4
+win32com

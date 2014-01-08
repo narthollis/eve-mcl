@@ -1,8 +1,12 @@
 
+import os, os.path, subprocess
+
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 
-from . import resources
-from .dialogs import UI_EditAccount, UI_ListClients, UI_About
+from mcl.gui import resources
+from mcl.gui.dialogs import UI_EditAccount, UI_ListClients, UI_About
+
+from mcl.launch import Launch
 
 
 class AccountRow(QtCore.QObject):
@@ -90,6 +94,48 @@ class AccountRow(QtCore.QObject):
         )
         self.parent.config.save()
 
+    def launch(self):
+        client_label = self.combobox.currentText()
+        if client_label not in self.parent.config.clients.keys():
+            dialog = QtWidgets.QMessageBox(parent=self.parent)
+            dialog.setWindowTitle('No Client Selected')
+            dialog.setText('You must select a client to use.')
+            dialog.setModal(True)
+            dialog.show()
+            return
+
+        exepath = os.path.join(self.parent.config.clients[client_label].path, 'bin', 'exefile.exe')
+        if not os.path.exists(exepath):
+            dialog = QtWidgets.QMessageBox(parent=self.parent)
+            dialog.setWindowTitle('Client Not found')
+            dialog.setText('Please ensure that the selected EVE Client is properly configuerd.')
+            dialog.setModal(True)
+            dialog.show()
+            return
+
+        launch = Launch(self.username, self.password, self.parent.config.clients[client_label], parent=self.parent)
+        launch.start()
+
+        return
+
+        cmd = []
+
+        if self.parent.config.clients[client_label].wine_cmd:
+            cmd.append(self.parent.config.clients[client_label].wine_cmd)
+            if self.parent.config.clients[client_label].wine_flags:
+                cmd.append(self.parent.config.clients[client_label].wine_flags)
+
+        cmd.append('"{}"'.format(exepath))
+
+        if self.parent.config.clients[client_label].server == "singularity":
+            cmd.append("/server:Singularity")
+
+
+
+        cmd.append("/ssoToken=" + launch_token)
+
+        return subprocess.Popen(" ".join(cmd), shell=True)
+
     def on_labelButton_toggle(self):
         self.storeState()
 
@@ -97,7 +143,7 @@ class AccountRow(QtCore.QObject):
         self.storeState()
 
     def on_launchButton_clicked(self):
-        print('on_button_clicked', self.label)
+        self.launch()
 
     def on_edit_clicked(self):
         dialog = UI_EditAccount(parent=self.parent, label=self.label, username=self.username, password=self.password)
@@ -168,7 +214,9 @@ class UI_Main(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def on_actionLaunch_Selected_triggered(self):
-        print('on_actionLaunch_Selected_triggered')
+        for row in self.accountRows.values():
+            if row.labelButton.isChecked():
+                row.launch()
 
     @QtCore.pyqtSlot()
     def on_actionAdd_Account_triggered(self):
