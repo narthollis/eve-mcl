@@ -19,7 +19,7 @@ if sys.platform == "win32":
 
 setup(
         name = "EVE-MCL",
-        version = "1.0.0",
+        version = "1.1.0",
         description = "EVE Multi-Client and Account Launcher",
         executables = [Executable("mcl.py", base=base)]
 )
