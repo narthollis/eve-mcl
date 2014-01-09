@@ -5,7 +5,7 @@ import sys
 try:
     import _preamble
 except ImportError:
-    sys.exc_clear()
+    pass
 
 from mcl.main import main
 
