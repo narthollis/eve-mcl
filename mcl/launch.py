@@ -50,6 +50,10 @@ class Launch(QThread):
             self.finished.emit(False)
 
             return
+        except Exception as e:
+            logger.exception(e)
+
+            return
 
         logger.debug('%s Login Success', repr(self))
 

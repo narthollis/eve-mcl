@@ -42,7 +42,7 @@ class LoginFailed(Exception):
 
 
 def do_login(username, password):
-    log.debug("Using cached SSO login URL")
+    log.debug("<submit_login(%s)> Using cached SSO login URL", username)
 
     #login_action_url = "https://sisilogin.testeveonline.com/oauth/authorize/?" + \
     #                   "client_id=eveLauncherTQ&lang=en&response_type=token&" + \
@@ -54,7 +54,7 @@ def do_login(username, password):
         "redirect_uri%3Dhttps%3A%2F%2Flogin.eveonline.com%2Flauncher%3Fclient_id%3DeveLauncherTQ%26scope%3DeveClientToken"
 
     access_token = submit_login(login_action_url, username, password)
-    launch_token = get_launch_token(access_token)
+    launch_token = get_launch_token(access_token, username)
 
     return launch_token
 
@@ -82,7 +82,7 @@ def get_login_action_url(launcher_url):
 
 
 def submit_login(action_url, username, password):
-    log.info("Submitting username / password")
+    log.info("<submit_login(%s)> Submitting username / password", username)
 
     auth_result = requests.post(
         action_url,
@@ -99,8 +99,8 @@ def submit_login(action_url, username, password):
     return matches.group(1)
 
 
-def get_launch_token(access_token):
-    log.info("Fetching launch token")
+def get_launch_token(access_token, username):
+    log.info("<submit_login(%s)> Fetching launch token", username)
 
     response = requests.get(
         "https://login.eveonline.com/launcher/token?accesstoken=" + access_token,

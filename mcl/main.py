@@ -2,6 +2,11 @@
 
 import sys, os, argparse, logging, logging.handlers
 
+
+# http://stackoverflow.com/questions/9144724/unknown-encoding-idna-in-python-requests
+import encodings.idna
+
+
 from appdirs import AppDirs
 
 from PyQt5.QtWidgets import QApplication
@@ -25,14 +30,19 @@ def main():
     args = parser.parse_args()
 
     mcl_logger = logging.getLogger('mcl')
+    mlp_logger = logging.getLogger('mlp')
 
     if args.log_level != 'OFF':
         formatter = logging.Formatter("{levelname!s:<8} {name!s:<25} {message!s}", style='{')
         handler = logging.handlers.RotatingFileHandler(filename=args.log_path, backupCount=10)
         handler.setFormatter(formatter)
         handler.doRollover()
+
         mcl_logger.addHandler(handler)
+        mlp_logger.addHandler(handler)
+
         mcl_logger.setLevel(args.log_level)
+        mlp_logger.setLevel(args.log_level)
 
     logger.debug('Starting....')
     logger.info('Log Path: %s', args.log_path)
