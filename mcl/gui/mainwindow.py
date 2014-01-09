@@ -99,6 +99,9 @@ class AccountRow(QtCore.QObject):
         self.parent.config.save()
 
     def launch(self):
+        if not self.launchButton.isEnabled():
+            return
+
         client_label = self.combobox.currentText()
         if client_label not in self.parent.config.clients.keys():
             dialog = QtWidgets.QMessageBox(parent=self.parent)
