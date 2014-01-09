@@ -33,8 +33,8 @@ class Launch(QThread):
             cmd.append("/server:Singularity")
 
         try:
-            launch_token = login.do_login(self.username, self.password)
-        except login.LoginFailed as e:
+            launch_token = mlp.login.do_login(self.username, self.password)
+        except mlp.login.LoginFailed as e:
             self.error.emit(e)
             self.finished.emit(False)
             return
