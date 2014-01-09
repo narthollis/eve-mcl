@@ -20,7 +20,7 @@ def main():
     log_levels.append('OFF')
 
     parser.add_argument('--log-level', action='store', choices=log_levels, default='OFF')
-    parser.add_argument('--log-path', action='store', default='~/{}_v{}.log'.format(NAME, VERSION))
+    parser.add_argument('--log-path', action='store', default='{}_v{}.log'.format(NAME, VERSION))
 
     args = parser.parse_args()
 
