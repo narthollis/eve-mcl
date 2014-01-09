@@ -1,5 +1,5 @@
 
-import os, os.path, subprocess
+import os, os.path
 
 from PyQt5 import QtWidgets, uic, QtGui, QtCore, Qt
 

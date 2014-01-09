@@ -3,7 +3,7 @@ import os, subprocess, time
 from PyQt5.QtCore import QThread, pyqtSignal
 
 
-import login
+import mlp.login
 
 class Launch(QThread):
     finished = pyqtSignal(object)

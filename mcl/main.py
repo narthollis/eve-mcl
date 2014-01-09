@@ -1,14 +1,16 @@
 #!/usr/bin/python33
 
 import sys, os
+import argparse
+
 
 from appdirs import AppDirs
 
 from PyQt5.QtWidgets import QApplication
 
-from .gui.mainwindow import UI_Main
+from mcl.gui.mainwindow import UI_Main
 
-from .config import MCLConfig
+from mcl.config import MCLConfig
 
 def main():
     appdir = os.path.abspath(AppDirs("eve-mlc", 'narthollis', roaming=True).user_data_dir)

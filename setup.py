@@ -13,13 +13,16 @@ import sys
 
 from cx_Freeze import setup, Executable
 
+import mcl
+
+
 base = None
 if sys.platform == "win32":
     base = "Win32GUI"
 
 setup(
-        name = "EVE-MCL",
-        version = "1.1.0",
-        description = "EVE Multi-Client and Account Launcher",
+        name = mcl.NAME,
+        version = mcl.VERSION,
+        description = mcl.DESCRIPTION,
         executables = [Executable("mcl.py", base=base)]
 )
