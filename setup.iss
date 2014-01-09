@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "EVE-MCL"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.2.2"
 #define MyAppPublisher "Nicholas Steicke (narthollis)"
 #define MyAppURL "https://github.com/narthollis/eve-mcl/"
 #define MyAppExeName "mcl.exe"
@@ -22,8 +22,8 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\evemcl
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-OutputDir=C:\Users\narthollis\workspace\eve-mcl\build\installer
-OutputBaseFilename=eve-mcl-setup
+OutputDir=build\installer
+OutputBaseFilename=eve-mcl-setup-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
 
