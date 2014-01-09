@@ -27,7 +27,7 @@ def main():
     mcl_logger = logging.getLogger('mcl')
 
     if args.log_level != 'OFF':
-        formatter = logging.Formatter("{levelname!s:<8} {name!s:<15} {message!s}", style='{')
+        formatter = logging.Formatter("{levelname!s:<8} {name!s:<25} {message!s}", style='{')
         handler = logging.handlers.RotatingFileHandler(filename=args.log_path, backupCount=10)
         handler.setFormatter(formatter)
         handler.doRollover()

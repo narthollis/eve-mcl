@@ -1,5 +1,5 @@
 
-import os, os.path
+import os, os.path, logging
 
 from PyQt5 import QtWidgets, uic, QtGui, QtCore, Qt
 
@@ -8,6 +8,8 @@ from mcl.gui.dialogs import UI_EditAccount, UI_ListClients, UI_About
 
 from mcl.launch import Launch
 
+
+logger = logging.getLogger(__name__)
 
 class AccountRow(QtCore.QObject):
 
@@ -18,6 +20,8 @@ class AccountRow(QtCore.QObject):
         self.label = label
         self.username = username
         self.password = password
+
+        logger.debug('%s New', repr(self))
 
         self.labelButton = QtWidgets.QPushButton(self.label)
 
@@ -43,6 +47,8 @@ class AccountRow(QtCore.QObject):
         self.labelButton.toggled.connect(lambda: self.on_labelButton_toggle())
         self.combobox.currentIndexChanged.connect(lambda: self.on_combobox_change())
 
+
+
         if self.label in self.parent.config.states.keys():
             state = self.parent.config.states[self.label]
 
@@ -52,9 +58,11 @@ class AccountRow(QtCore.QObject):
                 try:
                     self.combobox.setCurrentIndex(self.combobox.findText(state.clientLabel))
                 except Exception as e:
-                    print(e)
+                    logger.error(e)
 
     def remove(self):
+        logger.debug('%s Remove', repr(self))
+
         self.parent.accountGridLayout.removeWidget(self.labelButton)
         self.labelButton.deleteLater()
 
@@ -71,6 +79,8 @@ class AccountRow(QtCore.QObject):
         self.editButton.deleteLater()
 
     def redraw(self, *, label, username, password):
+        logger.debug('%s Redraw', repr(self))
+
         self.label = label
         self.username = username
         self.password = password
@@ -91,6 +101,8 @@ class AccountRow(QtCore.QObject):
             pass
 
     def storeState(self):
+        logger.debug('%s Store State', repr(self))
+
         self.parent.config.setState(
             label=self.label,
             selected=self.labelButton.isChecked(),
@@ -99,7 +111,10 @@ class AccountRow(QtCore.QObject):
         self.parent.config.save()
 
     def launch(self):
+        logger.info('%s Launch', repr(self))
+
         if not self.launchButton.isEnabled():
+            logger.debug('%s Launch Aborted (Launch Button Disabled)', repr(self))
             return
 
         client_label = self.combobox.currentText()
@@ -109,6 +124,8 @@ class AccountRow(QtCore.QObject):
             dialog.setText('You must select a client to use.')
             dialog.setModal(True)
             dialog.show()
+
+            logger.debug('%s Launch Aborted (Client Missing)', repr(self))
             return
 
         exepath = os.path.join(self.parent.config.clients[client_label].path, 'bin', 'exefile.exe')
@@ -118,12 +135,15 @@ class AccountRow(QtCore.QObject):
             dialog.setText('Please ensure that the selected EVE Client is properly configuerd.')
             dialog.setModal(True)
             dialog.show()
+
+            logger.debug('%s Launch Aborted (exefile.exe Missing)', repr(self))
             return
 
         self.launchButton.setDisabled(True)
         self.launchButton.setFlat(True)
         self.launchButton.setText("Launching....")
 
+        logger.debug('%s Pre-Launch Tests Passed', repr(self))
 
         self._launch = Launch(self.username, self.password, self.parent.config.clients[client_label])
 
@@ -132,9 +152,13 @@ class AccountRow(QtCore.QObject):
 
         self._launch.start()
 
+        logger.debug('%s Launch Thread Started', repr(self))
+
         return
 
     def on_launch_finished(self, a=None):
+        logger.debug('%s On Launch Finished (%s)', repr(self), repr(a))
+
         if a is False:
             self.launchButton.setText('Error')
         else:
@@ -143,6 +167,8 @@ class AccountRow(QtCore.QObject):
             self.launchButton.setText("Launch")
 
     def on_login_error(self, e):
+        logger.debug('%s On Login Error (%s)', repr(self), repr(e))
+
         dialog = QtWidgets.QMessageBox(parent=self.parent)
         dialog.setWindowTitle('Login Error')
         dialog.setText(str(e))
@@ -151,24 +177,37 @@ class AccountRow(QtCore.QObject):
         return
 
     def on_labelButton_toggle(self):
+        logger.debug('%s On Label Button Toggle', repr(self))
+
         self.storeState()
 
     def on_combobox_change(self, *args, **kwargs):
+        logger.debug('%s On Combobox Change', repr(self))
+
         self.storeState()
 
     def on_launchButton_clicked(self):
+        logger.debug('%s On Launch Button Clicked', repr(self))
+
         self.launch()
 
     def on_edit_clicked(self):
+        logger.debug('%s On Edit Clicked', repr(self))
+
         dialog = UI_EditAccount(parent=self.parent, label=self.label, username=self.username, password=self.password)
         dialog.setModal(True)
         dialog.show()
 
     def on_remove_clicked(self):
+        logger.debug('%s On Remove Clicked', repr(self))
+
         self.parent.config.removeAccount(self.label)
         self.parent.config.save()
 
         self.parent.addRemoveAccountRows()
+
+    def __repr__(self):
+        return '<AccountRow("{}")>'.format(self.label)
 
 
 class UI_Main(QtWidgets.QMainWindow):
@@ -228,12 +267,14 @@ class UI_Main(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def on_actionLaunch_Selected_triggered(self):
+        logger.debug('<MainWindow> on_actionLaunch_Selected_triggered')
         for row in self.accountRows.values():
             if row.labelButton.isChecked():
                 row.launch()
 
     @QtCore.pyqtSlot()
     def on_actionAdd_Account_triggered(self):
+        logger.debug('<MainWindow> on_actionAdd_Account_triggered')
         if len(self.config.clients) == 0:
             dialog = QtWidgets.QMessageBox(parent=self)
             dialog.setText('Please add a Client first.')
@@ -244,16 +285,19 @@ class UI_Main(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot()
     def on_actionManage_Configs_triggered(self, *args, **kwargs):
+        logger.debug('<MainWindow> on_actionManage_Configs_triggered')
         dialog = UI_ListClients(parent=self, clients=self.config.clients)
         dialog.setModal(True)
         dialog.show()
 
     @QtCore.pyqtSlot()
     def on_actionExit_triggered(self, *args, **kwargs):
+        logger.debug('<MainWindow> on_actionExit_triggered')
         self.close()
 
     @QtCore.pyqtSlot()
     def on_actionAbout_triggered(self):
+        logger.debug('<MainWindow> on_actionAbout_triggered')
         dialog = UI_About(parent=self)
         dialog.setModal(True)
         dialog.show()
