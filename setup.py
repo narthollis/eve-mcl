@@ -24,5 +24,10 @@ setup(
         name = mcl.NAME,
         version = mcl.VERSION,
         description = mcl.DESCRIPTION,
-        executables = [Executable("bin/mcl.py", base=base)]
+        executables = [
+            Executable(
+                "bin/mcl.py",
+                base=base,
+                icon='mcl/gui/icons/MCL.ico')
+        ],
 )
