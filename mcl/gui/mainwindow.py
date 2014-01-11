@@ -47,7 +47,12 @@ class AccountRow(QtCore.QObject):
         self.labelButton.toggled.connect(lambda: self.on_labelButton_toggle())
         self.combobox.currentIndexChanged.connect(lambda: self.on_combobox_change())
 
+        self.launchAction = QtWidgets.QAction('Launch ' + self.label, self.parent)
+        self.setLaunchActionIcon()
+        #self.launchAction.triggered.connect(lambda: self.on_launchButton_clicked())
+        self.launchAction.triggered.connect(lambda: self.labelButton.toggle())
 
+        self.parent.trayIconMenu.addAction(self.launchAction)
 
         if self.label in self.parent.config.states.keys():
             state = self.parent.config.states[self.label]
@@ -60,8 +65,17 @@ class AccountRow(QtCore.QObject):
                 except Exception as e:
                     logger.error(e)
 
+    def setLaunchActionIcon(self):
+        if self.labelButton.isChecked():
+            self.launchAction.setIcon(QtGui.QIcon(":/icons/icons/tick.png"))
+        else:
+            self.launchAction.setIcon(QtGui.QIcon(":/icons/icons/cross.png"))
+
     def remove(self):
         logger.debug('%s Remove', repr(self))
+
+        self.parent.trayIconMenu.removeAction(self.launchAction)
+        self.launchAction.deleteLater()
 
         self.parent.accountGridLayout.removeWidget(self.labelButton)
         self.labelButton.deleteLater()
@@ -179,6 +193,7 @@ class AccountRow(QtCore.QObject):
     def on_labelButton_toggle(self):
         logger.debug('%s On Label Button Toggle', repr(self))
 
+        self.setLaunchActionIcon()
         self.storeState()
 
     def on_combobox_change(self, *args, **kwargs):
@@ -220,6 +235,10 @@ class UI_Main(QtWidgets.QMainWindow):
         ui.open(QtCore.QIODevice.ReadOnly)
         uic.loadUi(ui, self)
 
+        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(':/icons/icons/MCL.png')))
+
+        self.addSystemTrayIcon()
+
         self.accountGridLayout.setAlignment(QtCore.Qt.AlignTop)
         self.accountGridLayout.setColumnStretch(0, 3)
         self.accountGridLayout.setColumnStretch(1, 3)
@@ -233,6 +252,36 @@ class UI_Main(QtWidgets.QMainWindow):
         self.addRemoveAccountRows()
         #for account in self.config.accounts.values():
         #    self.addAccountRow(account)
+
+    def closeEvent(self, event, *args, **kwargs):
+        if self.trayIcon.isVisible():
+            QtWidgets.QMessageBox.information(self,
+                                              "Systray",
+                                              "The program will keep running in the " +
+                                              "system tray. To terminate the program, " +
+                                              "choose <b>Exit</b> in the context menu " +
+                                              "of the system tray entry, or in the toolbar.")
+
+            self.hide()
+            event.ignore()
+
+    def realClose(self):
+        self.trayIcon.hide()
+
+        super(UI_Main, self).close()
+
+    def addSystemTrayIcon(self):
+        self.trayIconMenu = QtWidgets.QMenu(parent=self)
+        self.trayIconMenu.addAction(self.actionExit)
+        self.trayIconMenu.addSeparator()
+        self.trayIconMenu.addAction(self.actionLaunch_Selected)
+        self.trayIconMenu.addSeparator()
+
+        self.trayIcon = QtWidgets.QSystemTrayIcon(parent=self)
+        self.trayIcon.setIcon(QtGui.QIcon(QtGui.QPixmap(':/icons/icons/MCL.png')))
+        self.trayIcon.setContextMenu(self.trayIconMenu)
+
+        self.trayIcon.show()
 
     def addAccountRow(self, account):
         row_idx = len(self.accountRows)
@@ -293,7 +342,7 @@ class UI_Main(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def on_actionExit_triggered(self, *args, **kwargs):
         logger.debug('<MainWindow> on_actionExit_triggered')
-        self.close()
+        self.realClose()
 
     @QtCore.pyqtSlot()
     def on_actionAbout_triggered(self):
