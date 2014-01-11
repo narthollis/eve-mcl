@@ -250,25 +250,6 @@ class UI_Main(QtWidgets.QMainWindow):
         self.accountRows = {}
 
         self.addRemoveAccountRows()
-        #for account in self.config.accounts.values():
-        #    self.addAccountRow(account)
-
-    def closeEvent(self, event, *args, **kwargs):
-        if self.trayIcon.isVisible():
-            QtWidgets.QMessageBox.information(self,
-                                              "Systray",
-                                              "The program will keep running in the " +
-                                              "system tray. To terminate the program, " +
-                                              "choose <b>Exit</b> in the context menu " +
-                                              "of the system tray entry, or in the toolbar.")
-
-            self.hide()
-            event.ignore()
-
-    def realClose(self):
-        self.trayIcon.hide()
-
-        super(UI_Main, self).close()
 
     def addSystemTrayIcon(self):
         self.trayIconMenu = QtWidgets.QMenu(parent=self)
@@ -280,6 +261,10 @@ class UI_Main(QtWidgets.QMainWindow):
         self.trayIcon = QtWidgets.QSystemTrayIcon(parent=self)
         self.trayIcon.setIcon(QtGui.QIcon(QtGui.QPixmap(':/icons/icons/MCL.png')))
         self.trayIcon.setContextMenu(self.trayIconMenu)
+
+        self.trayIcon.activated.connect(self.on_trayIcon_activated)
+
+        self.trayIconMessageShown = False
 
         self.trayIcon.show()
 
@@ -314,6 +299,27 @@ class UI_Main(QtWidgets.QMainWindow):
             self.accountRows[label].remove()
             del self.accountRows[label]
 
+    def closeEvent(self, event, *args, **kwargs):
+        if self.trayIcon.isVisible():
+            if not self.trayIconMessageShown:
+                QtWidgets.QMessageBox.information(self,
+                                                  "Systray",
+                                                  "The program will keep running in the " +
+                                                  "system tray. To terminate the program, " +
+                                                  "choose <b>Exit</b> in the context menu " +
+                                                  "of the system tray entry, or in the toolbar.")
+                self.trayIconMessageShown = True
+
+            self.hide()
+            event.ignore()
+
+    @QtCore.pyqtSlot(QtWidgets.QSystemTrayIcon.ActivationReason)
+    def on_trayIcon_activated(self, reason):
+        if reason == QtWidgets.QSystemTrayIcon.Trigger or \
+           reason == QtWidgets.QSystemTrayIcon.DoubleClick:
+
+            self.show()
+
     @QtCore.pyqtSlot()
     def on_actionLaunch_Selected_triggered(self):
         logger.debug('<MainWindow> on_actionLaunch_Selected_triggered')
@@ -342,7 +348,9 @@ class UI_Main(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def on_actionExit_triggered(self, *args, **kwargs):
         logger.debug('<MainWindow> on_actionExit_triggered')
-        self.realClose()
+
+        self.trayIcon.hide()
+        self.close()
 
     @QtCore.pyqtSlot()
     def on_actionAbout_triggered(self):
