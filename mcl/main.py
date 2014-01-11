@@ -2,14 +2,14 @@
 
 import sys, os, argparse, logging, logging.handlers
 
-
 # http://stackoverflow.com/questions/9144724/unknown-encoding-idna-in-python-requests
 import encodings.idna
 
 
 from appdirs import AppDirs
 
-from PyQt5.QtWidgets import QApplication
+#from PyQt5.QtWidgets import QApplication
+from mcl.gui.qtsingleapplication import QtSingleApplication
 
 
 from mcl import NAME, VERSION
@@ -18,7 +18,16 @@ from mcl.config import MCLConfig
 
 logger = logging.getLogger(__name__)
 
+
+APP_GUID = '69AA5B71-739D-4205-9331-6820672B5577'
+
 def main():
+    #app = QApplication(sys.argv)
+    app = QtSingleApplication(APP_GUID, sys.argv)
+
+    if app.isRunning(): sys.exit(0)
+
+
     parser = argparse.ArgumentParser()
 
     log_levels = [logging.getLevelName(i) for i in range(10, 50, 10)]
@@ -63,9 +72,9 @@ def main():
         config = MCLConfig(appdir + os.path.sep + 'config.json')
         logger.info('Created new config file.')
 
-    app = QApplication(sys.argv)
-
     main = UI_Main(config=config)
     main.show()
+
+    app.setActivationWindow(main)
 
     app.exec()
