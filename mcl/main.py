@@ -36,6 +36,8 @@ def main():
     parser.add_argument('--log-level', action='store', choices=log_levels, default='OFF')
     parser.add_argument('--log-path', action='store', default='{}_v{}.log'.format(NAME, VERSION))
 
+    parser.add_argument('--start-in-tray', action='store_const', const=True, default=False)
+
     args = parser.parse_args()
 
     mcl_logger = logging.getLogger('mcl')
@@ -74,6 +76,9 @@ def main():
 
     main = UI_Main(config=config)
     main.show()
+
+    if args.start_in_tray:
+        main.hide()
 
     app.setActivationWindow(main)
 
