@@ -21,7 +21,7 @@ class UI_EditAccount(QtWidgets.QDialog):
     def accept(self):
         parent = self.parent()
 
-        label = self.accountLabel.text()
+        label = self.accountLabel.text().strip()
 
         if self.oldLabel:
             if self.oldLabel in parent.config.accounts.keys():

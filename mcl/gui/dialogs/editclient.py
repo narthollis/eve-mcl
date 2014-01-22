@@ -71,7 +71,7 @@ class UI_EditClient(QtWidgets.QDialog):
         except AttributeError:
             parent = parent.parent()
 
-        label = self.configName.text()
+        label = self.configName.text().strip()
 
         if self.oldLabel:
             if self.oldLabel in parent.config.clients.keys():

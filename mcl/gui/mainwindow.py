@@ -269,7 +269,8 @@ class UI_Main(QtWidgets.QMainWindow):
         self.trayIcon.show()
 
     def addAccountRow(self, account):
-        row_idx = len(self.accountRows)
+        #row_idx = len(self.accountRows)
+        row_idx = self.accountGridLayout.rowCount()
 
         self.accountRows[account.label] = AccountRow(clients=self.flatClientList, parent=self, **account)
 
