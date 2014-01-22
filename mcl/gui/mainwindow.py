@@ -49,8 +49,8 @@ class AccountRow(QtCore.QObject):
 
         self.launchAction = QtWidgets.QAction('Launch ' + self.label, self.parent)
         self.setLaunchActionIcon()
-        #self.launchAction.triggered.connect(lambda: self.on_launchButton_clicked())
-        self.launchAction.triggered.connect(lambda: self.labelButton.toggle())
+        self.launchAction.triggered.connect(lambda: self.on_launchButton_clicked())
+        #self.launchAction.triggered.connect(lambda: self.labelButton.toggle())
 
         self.parent.trayIconMenu.addAction(self.launchAction)
 
