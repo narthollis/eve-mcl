@@ -79,6 +79,7 @@ def main():
 
     if args.start_in_tray:
         main.hide()
+        main.trayIconMessageShown = True
 
     app.setActivationWindow(main)
 
