@@ -6,7 +6,7 @@ from PyQt5.QtCore import pyqtSlot
 
 
 class UI_EditAccount(QtWidgets.QDialog):
-    def __init__(self, *args, label=None, username=None, password=None, **kwargs):
+    def __init__(self, *args, label=None, username=None, password=None, protected=False, **kwargs):
         super(UI_EditAccount, self).__init__(*args, **kwargs)
 
         ui = QtCore.QFile(":/uis/dialogs/edit_account.ui")
@@ -17,6 +17,7 @@ class UI_EditAccount(QtWidgets.QDialog):
         if label: self.accountLabel.setText(label)
         if username: self.accountUsername.setText(username)
         if password: self.accountPassword.setText(password)
+        self.accountProtectLaunch.setCheckState(protected)
 
     def accept(self):
         parent = self.parent()
@@ -37,7 +38,8 @@ class UI_EditAccount(QtWidgets.QDialog):
         parent.config.addAccount(
             label=label,
             username=self.accountUsername.text(),
-            password=self.accountPassword.text()
+            password=self.accountPassword.text(),
+            protected=self.accountProtectLaunch.isChecked()
         )
 
         parent.config.save()

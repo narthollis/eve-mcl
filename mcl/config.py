@@ -22,8 +22,13 @@ class MCLConfig(object):
     def save(self):
         json.dump(self.__json__(), open(self.path, 'w'))
 
-    def addAccount(self, *, label, username, password=None):
-        self.accounts[label] = AccountConfig(label=label, username=username, password=password)
+    def addAccount(self, *, label, username, protected, password=None):
+        self.accounts[label] = AccountConfig(
+            label=label,
+            username=username,
+            password=password,
+            protected=protected
+        )
 
     def removeAccount(self, label):
         del self.accounts[label]
@@ -172,7 +177,8 @@ class AccountConfig(BaseConfig):
     DEFAULTS = {
         'label': 'Default',
         'username': None,
-        'password': None
+        'password': None,
+        'protected': False
     }
 
 

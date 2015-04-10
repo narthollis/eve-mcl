@@ -13,21 +13,42 @@ logger = logging.getLogger(__name__)
 
 class AccountRow(QtCore.QObject):
 
-    def __init__(self, *, label, username, password, clients, parent):
+    def __init__(self, *, label, username, password, protected, clients, parent):
         super(AccountRow, self).__init__()
 
         self.parent = parent
         self.label = label
         self.username = username
         self.password = password
+        self.protected = protected
 
         logger.debug('%s New', repr(self))
 
         self.labelButton = QtWidgets.QPushButton(self.label)
 
         labelIcon = QtGui.QIcon()
-        labelIcon.addPixmap(QtGui.QPixmap(":/icons/icons/tick.png"), QtGui.QIcon.Normal, QtGui.QIcon.On)
-        labelIcon.addPixmap(QtGui.QPixmap(":/icons/icons/cross.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        if self.protected:
+            labelIcon.addPixmap(
+                QtGui.QPixmap(":/icons/icons/lock_open.png"),
+                QtGui.QIcon.Normal,
+                QtGui.QIcon.On
+            )
+            labelIcon.addPixmap(
+                QtGui.QPixmap(":/icons/icons/lock.png"),
+                QtGui.QIcon.Normal,
+                QtGui.QIcon.Off
+            )
+        else:
+            labelIcon.addPixmap(
+                QtGui.QPixmap(":/icons/icons/tick.png"),
+                QtGui.QIcon.Normal,
+                QtGui.QIcon.On
+            )
+            labelIcon.addPixmap(
+                QtGui.QPixmap(":/icons/icons/cross.png"),
+                QtGui.QIcon.Normal,
+                QtGui.QIcon.Off
+            )
         self.labelButton.setIcon(labelIcon)
         self.labelButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.labelButton.setCheckable(True)
@@ -37,6 +58,8 @@ class AccountRow(QtCore.QObject):
         self.combobox.addItems(clients)
 
         self.launchButton = QtWidgets.QPushButton("Launch")
+        self.launchButton.setDisabled(self.protected)
+
         self.editButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(':/icons/icons/wrench.png')), '')
         self.removeButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(':/icons/icons/delete.png')), '')
 
@@ -54,7 +77,10 @@ class AccountRow(QtCore.QObject):
 
         self.parent.trayIconMenu.addAction(self.launchAction)
 
-        if self.label in self.parent.config.states.keys():
+        # We should never save the state of the label button for protected accounts
+        if self.protected:
+            self.labelButton.setChecked(False)
+        elif self.label in self.parent.config.states.keys():
             state = self.parent.config.states[self.label]
 
             self.labelButton.setChecked(state.selected)
@@ -92,14 +118,15 @@ class AccountRow(QtCore.QObject):
         self.parent.accountGridLayout.removeWidget(self.editButton)
         self.editButton.deleteLater()
 
-    def redraw(self, *, label, username, password):
+    def redraw(self, *, label, username, password, protected):
         logger.debug('%s Redraw', repr(self))
 
         self.label = label
         self.username = username
         self.password = password
+        self.protected = protected
 
-        self.launchButton.setDisabled(False)
+        self.launchButton.setDisabled(self.protected)
         self.launchButton.setFlat(False)
         self.launchButton.setText("Launch")
 
@@ -153,7 +180,7 @@ class AccountRow(QtCore.QObject):
             logger.debug('%s Launch Aborted (exefile.exe Missing)', repr(self))
             return
 
-        self.launchButton.setDisabled(True)
+        self.launchButton.setDisabled(self.protected)
         self.launchButton.setFlat(True)
         self.launchButton.setText("Launching....")
 
@@ -176,7 +203,9 @@ class AccountRow(QtCore.QObject):
         if a is False:
             self.launchButton.setText('Error')
         else:
-            self.launchButton.setDisabled(False)
+            self.launchButton.setDisabled(self.protected)
+            if self.protected:
+                self.labelButton.setChecked(False)
             self.launchButton.setFlat(False)
             self.launchButton.setText("Launch")
 
@@ -194,7 +223,12 @@ class AccountRow(QtCore.QObject):
         logger.debug('%s On Label Button Toggle', repr(self))
 
         self.setLaunchActionIcon()
-        self.storeState()
+
+        if self.protected:
+            self.launchButton.setDisabled(not self.labelButton.isChecked())
+        else:
+            self.storeState()
+
 
     def on_combobox_change(self, *args, **kwargs):
         logger.debug('%s On Combobox Change', repr(self))
@@ -222,7 +256,7 @@ class AccountRow(QtCore.QObject):
         self.parent.addRemoveAccountRows()
 
     def __repr__(self):
-        return '<AccountRow("{}")>'.format(self.label)
+        return '<AccountRow("{}",protected={})>'.format(self.label, self.protected)
 
 
 class UI_Main(QtWidgets.QMainWindow):
@@ -325,8 +359,9 @@ class UI_Main(QtWidgets.QMainWindow):
     def on_actionLaunch_Selected_triggered(self):
         logger.debug('<MainWindow> on_actionLaunch_Selected_triggered')
         for row in self.accountRows.values():
-            if row.labelButton.isChecked():
-                row.launch()
+            if not row.protected:
+                if row.labelButton.isChecked():
+                    row.launch()
 
     @QtCore.pyqtSlot()
     def on_actionAdd_Account_triggered(self):

@@ -3,3 +3,4 @@ appdirs
 requests
 beautifulsoup4
 win32com
+jaraco.windows

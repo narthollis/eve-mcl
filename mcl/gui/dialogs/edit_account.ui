@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>166</height>
+    <width>373</width>
+    <height>226</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,16 +53,37 @@
        </property>
       </widget>
      </item>
+     <item row="3" column="1">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Please note that passwords are stored in plain text. If you wish to be prompted for the password when you launch the game, just leave the password field blank.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="protectLaunchLabel">
+       <property name="text">
+        <string>Protect Launch</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QCheckBox" name="accountProtectLaunch"/>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>This stops your launching this account without first enabling the account. It also prevents you from launching this account with the &quot;Launch All&quot; button.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Please note that passwords are stored in plain text.
-If you wish to be prompted for the password when you
-launch the game, just leave the password field blank.</string>
-     </property>
-    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
