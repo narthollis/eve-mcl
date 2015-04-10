@@ -37,7 +37,7 @@ class Launch(QThread):
 
         cmd.append('"{}"'.format(exepath))
 
-        if self.client_cfg.server == "singularity":
+        if self.client_cfg.server.lower() == "singularity":
             cmd.append("/server:Singularity")
 
         logger.debug('%s Login Start', repr(self))

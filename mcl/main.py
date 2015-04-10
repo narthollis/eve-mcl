@@ -1,10 +1,13 @@
 #!/usr/bin/python33
 
-import sys, os, argparse, logging, logging.handlers
+import sys
+import os
+import argparse
+import logging
+import logging.handlers
 
 # http://stackoverflow.com/questions/9144724/unknown-encoding-idna-in-python-requests
 import encodings.idna
-
 
 from appdirs import AppDirs
 
@@ -35,6 +38,7 @@ def main():
 
     parser.add_argument('--log-level', action='store', choices=log_levels, default='OFF')
     parser.add_argument('--log-path', action='store', default='{}_v{}.log'.format(NAME, VERSION))
+    parser.add_argument('--log-console', action='store_const', const=True, default=False)
 
     parser.add_argument('--start-in-tray', action='store_const', const=True, default=False)
 
@@ -51,6 +55,13 @@ def main():
 
         mcl_logger.addHandler(handler)
         mlp_logger.addHandler(handler)
+
+        if args.log_console:
+            handler_console = logging.StreamHandler(stream=sys.stderr)
+            handler_console.setFormatter(formatter)
+
+            mcl_logger.addHandler(handler_console)
+            mlp_logger.addHandler(handler_console)
 
         mcl_logger.setLevel(args.log_level)
         mlp_logger.setLevel(args.log_level)
