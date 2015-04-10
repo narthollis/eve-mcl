@@ -17,7 +17,7 @@ class UI_EditAccount(QtWidgets.QDialog):
         if label: self.accountLabel.setText(label)
         if username: self.accountUsername.setText(username)
         if password: self.accountPassword.setText(password)
-        self.accountProtectLaunch.setCheckState(protected)
+        self.accountProtectLaunch.setChecked(protected)
 
     def accept(self):
         parent = self.parent()

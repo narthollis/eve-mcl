@@ -243,7 +243,13 @@ class AccountRow(QtCore.QObject):
     def on_edit_clicked(self):
         logger.debug('%s On Edit Clicked', repr(self))
 
-        dialog = UI_EditAccount(parent=self.parent, label=self.label, username=self.username, password=self.password)
+        dialog = UI_EditAccount(
+            parent=self.parent,
+            label=self.label,
+            username=self.username,
+            password=self.password,
+            protected=self.protected
+        )
         dialog.setModal(True)
         dialog.show()
 

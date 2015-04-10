@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "EVE-MCL"
-#define MyAppVersion "1.4.0"
+#define MyAppVersion "1.5.1"
 #define MyAppPublisher "Nicholas Steicke (narthollis)"
 #define MyAppURL "https://github.com/narthollis/eve-mcl/"
 #define MyAppExeName "mcl.exe"
@@ -34,8 +34,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "build\exe.win-amd64-3.3\mcl.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "build\exe.win-amd64-3.3\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "build\exe.win-amd64-3.4\mcl.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "build\exe.win-amd64-3.4\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
