@@ -21,15 +21,36 @@ from mcl.config import MCLConfig
 
 logger = logging.getLogger(__name__)
 
-
 APP_GUID = '69AA5B71-739D-4205-9331-6820672B5577'
 
 def main():
+    has_console = True
+    try:
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+    except (IOError, AttributeError):
+        has_console = False
+
+    if not has_console:
+        class dummyStream:
+            ''' dummyStream behaves like a stream but does nothing. '''
+            def __init__(self): pass
+            def write(self,data): pass
+            def read(self,data): pass
+            def flush(self): pass
+            def close(self): pass
+        # and now redirect all default streams to this dummyStream:
+        sys.stdout = dummyStream()
+        sys.stderr = dummyStream()
+        sys.stdin = dummyStream()
+        sys.__stdout__ = dummyStream()
+        sys.__stderr__ = dummyStream()
+        sys.__stdin__ = dummyStream()
+
     #app = QApplication(sys.argv)
     app = QtSingleApplication(APP_GUID, sys.argv)
 
     if app.isRunning(): sys.exit(0)
-
 
     parser = argparse.ArgumentParser()
 
@@ -38,7 +59,8 @@ def main():
 
     parser.add_argument('--log-level', action='store', choices=log_levels, default='OFF')
     parser.add_argument('--log-path', action='store', default='{}_v{}.log'.format(NAME, VERSION))
-    parser.add_argument('--log-console', action='store_const', const=True, default=False)
+    if has_console:
+        parser.add_argument('--log-console', action='store_const', const=True, default=False)
 
     parser.add_argument('--start-in-tray', action='store_const', const=True, default=False)
 
@@ -56,12 +78,13 @@ def main():
         mcl_logger.addHandler(handler)
         mlp_logger.addHandler(handler)
 
-        if args.log_console:
-            handler_console = logging.StreamHandler(stream=sys.stderr)
-            handler_console.setFormatter(formatter)
+        if has_console:
+            if args.log_console:
+                handler_console = logging.StreamHandler(stream=sys.stderr)
+                handler_console.setFormatter(formatter)
 
-            mcl_logger.addHandler(handler_console)
-            mlp_logger.addHandler(handler_console)
+                mcl_logger.addHandler(handler_console)
+                mlp_logger.addHandler(handler_console)
 
         mcl_logger.setLevel(args.log_level)
         mlp_logger.setLevel(args.log_level)
@@ -72,6 +95,9 @@ def main():
 
     appdir = os.path.abspath(AppDirs("eve-mlc", 'narthollis', roaming=True).user_data_dir)
     logger.info('Appdir: %s', appdir)
+
+    print('this is a test', sys.stdout)
+
 
     try:
         os.makedirs(appdir, mode=0o700, exist_ok=True)
