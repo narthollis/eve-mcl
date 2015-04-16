@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "EVE-MCL"
-#define MyAppVersion "1.5.1"
+#define MyAppVersion "1.5.3"
 #define MyAppPublisher "Nicholas Steicke (narthollis)"
 #define MyAppURL "https://github.com/narthollis/eve-mcl/"
 #define MyAppExeName "mcl.exe"

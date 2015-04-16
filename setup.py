@@ -14,7 +14,7 @@ import sys
 from cx_Freeze import setup, Executable
 
 import mcl
-
+import requests.certs
 
 base = None
 if sys.platform == "win32":
@@ -24,10 +24,18 @@ setup(
         name = mcl.NAME,
         version = mcl.VERSION,
         description = mcl.DESCRIPTION,
+        options = {
+            "build_exe": {
+                "include_files": [
+                    (requests.certs.where(), 'cacert.pem')
+                ]
+            }
+        },
         executables = [
             Executable(
                 "bin/mcl.py",
                 base=base,
-                icon='mcl/gui/icons/MCL.ico')
+                icon='mcl/gui/icons/MCL.ico'
+            )
         ],
 )

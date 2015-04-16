@@ -24,7 +24,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-
+import os
+import sys
 import requests
 from urllib.parse import urljoin
 import re
@@ -32,6 +33,13 @@ import logging
 
 
 log = logging.getLogger(__name__)
+
+cert_file = requests.certs.where()
+
+if getattr(sys, 'frozen', False):
+    # The application is frozen
+    datadir = os.path.dirname(sys.executable)
+    cert_file = os.path.join(datadir, 'cacert.pem')
 
 
 LAUNCHER_INFO = 'http://client.eveonline.com/patches/win_launcherinfoTQ_inc.txt'
@@ -64,17 +72,17 @@ def get_login_action_url(launcher_url):
     import yaml
 
     # get general info
-    launcher_info = yaml.load(requests.get(launcher_url, verify=True))
+    launcher_info = yaml.load(requests.get(launcher_url, verify=cert_file))
     landing_url = launcher_info["UISettings"]["LandingPage"]
     landing_url = urljoin(launcher_url, landing_url)
 
     # load main launcher page
-    landing_page = BeautifulSoup(requests.get(landing_url, verify=True))
+    landing_page = BeautifulSoup(requests.get(landing_url, verify=cert_file))
     login_url = landing_page.find(id="sso-frame").get("src")
     login_url = urljoin(landing_url, login_url)
 
     # load login frame
-    login_page = BeautifulSoup(requests.get(login_url, verify=True))
+    login_page = BeautifulSoup(requests.get(login_url, verify=cert_file))
     action_url = login_page.find(name="form").get("action")
     action_url = urljoin(login_url, action_url)
 
@@ -87,7 +95,7 @@ def submit_login(action_url, username, password):
     auth_result = requests.post(
         action_url,
         data={"UserName": username, "Password": password},
-        verify=True,
+        verify=cert_file
     )
 
     if "<title>License Agreement Update</title>" in auth_result.text:
@@ -104,7 +112,7 @@ def get_launch_token(access_token, username):
 
     response = requests.get(
         "https://login.eveonline.com/launcher/token?accesstoken=" + access_token,
-        verify=True
+        verify=cert_file
     )
     matches = re.search("#access_token=([^&]+)", response.url)
     if not matches:

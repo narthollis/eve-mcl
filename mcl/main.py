@@ -96,9 +96,6 @@ def main():
     appdir = os.path.abspath(AppDirs("eve-mlc", 'narthollis', roaming=True).user_data_dir)
     logger.info('Appdir: %s', appdir)
 
-    print('this is a test', sys.stdout)
-
-
     try:
         os.makedirs(appdir, mode=0o700, exist_ok=True)
     except FileExistsError:
